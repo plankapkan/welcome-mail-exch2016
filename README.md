@@ -1,7 +1,7 @@
 # welcome-mail-exch2016
 This script sends welcome mail to new mailboxes and configure them.  
 It works for exchange DAG cluster.  
-
+ 
 To run script in scheduler use:  
 Start a program  
 C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe  
