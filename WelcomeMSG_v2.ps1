@@ -17,31 +17,27 @@ if ((Get-MailboxDatabaseCopyStatus | select Name,Status | ?{$_.Name -like $mailb
 	Foreach ($UsrIdentity in $UsrIdentitys)
 	{
 		# Disable POP3		
-        if ((Get-CASMailbox -Identity $UsrIdentity).POPEnabled -eq $True)
-		{
+        if ((Get-CASMailbox -Identity $UsrIdentity).POPEnabled -eq $True){
 			Set-CASMailbox -Identity $UsrIdentity -POPEnabled $False
 		}
         # Enable SingleItemRecovery
-		if ((Get-Mailbox -Identity $UsrIdentity).SingleItemRecoveryEnabled -eq $False)
-		{
+		if ((Get-Mailbox -Identity $UsrIdentity).SingleItemRecoveryEnabled -eq $False){
 			Set-Mailbox $UsrIdentity -SingleItemRecoveryEnabled $true
 		}
         # Set AuditEnabled
-        if ((Get-Mailbox -Identity $UsrIdentity).AuditEnabled -eq $False)
-		{
+        if ((Get-Mailbox -Identity $UsrIdentity).AuditEnabled -eq $False){
 			Set-Mailbox $UsrIdentity -AuditEnabled $true
 		}
         # Set WorkTime
-		if ((Get-MailboxCalendarConfiguration -Identity $UsrIdentity).WorkingHoursTimeZone -ne "Russian Standard Time")
-		{
+		if ((Get-MailboxCalendarConfiguration -Identity $UsrIdentity).WorkingHoursTimeZone -ne "Russian Standard Time"){
 			Set-MailboxCalendarConfiguration $UsrIdentity -WorkingHoursStartTime '10:00' -WorkingHoursEndTime '19:00' -WorkingHoursTimeZone “Russian Standard Time”
 		}
         # Setup OWA
-		if ((Get-MailboxRegionalConfiguration -Identity $UsrIdentity).DateFormat -eq $Null -or (Get-MailboxRegionalConfiguration -Identity $UsrIdentity).Language -eq $Null)
-		{
+		if ((Get-MailboxRegionalConfiguration -Identity $UsrIdentity).DateFormat -eq $Null -or (Get-MailboxRegionalConfiguration -Identity $UsrIdentity).Language -eq $Null){
 			Set-MailboxRegionalConfiguration -Identity $UsrIdentity -TimeZone "Russian Standard Time" -DateFormat "dd.MM.yyyy" -Language "ru-RU" -LocalizeDefaultFolderName
 		} 
-		while ((Search-Mailbox -Identity $UsrIdentity -EstimateResultOnly -SearchQuery {subject:"Welcome to Kryptonite!"}).ResultItemsCount -eq 0)
+		# Search in mailbox if welcome mail already sent
+		while ((Search-Mailbox -Identity $UsrIdentity -EstimateResultOnly -SearchQuery {subject:$message_subject}).ResultItemsCount -eq 0)
 		{
 			Write-host "Sending mail to" $UsrIdentity
 			#Welcome mail main code
